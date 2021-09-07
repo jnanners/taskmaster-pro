@@ -13,6 +13,8 @@ var createTask = function(taskText, taskDate, taskList) {
   // append span and p element to parent li
   taskLi.append(taskSpan, taskP);
 
+  //check due date
+  auditTask(taskLi);
 
   // append to ul list on the page
   $("#list-" + taskList).append(taskLi);
@@ -43,6 +45,34 @@ var loadTasks = function() {
 var saveTasks = function() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 };
+
+//checks due date
+var auditTask = function(taskEl){
+  //get date from task element
+  var date = $(taskEl).find("span").text().trim();
+  
+  //convert to moment object, setting time to 5pm because it defaults to 12am
+  var time = moment(date, "L").set("hour", 17);
+  
+  //remove any old classes from element
+  $(taskEl).removeClass("list-group-item-warning list-group-item-danger");
+
+  //apply new class if task due date is near/over due date
+  if(moment().isAfter(time)){
+    $(taskEl).addClass("list-group-item-danger");
+  }
+  //apply new class if task due date is 2 or fewer days away
+  //Math.abs gives us the absolute value, because the difference between now and 2 days in the future is -2
+  else if(Math.abs(moment().diff(time, "days")) <= 2){
+    $(taskEl).addClass("list-group-item-warning");
+  }
+};
+
+
+//datepicker 
+$("#modalDueDate").datepicker({
+  minDate: 1
+});
 
 
 //allow drag to drop deletion
@@ -162,12 +192,22 @@ $(".list-group").on("click", "span", function(){
   //swap out elements
   $(this).replaceWith(dateInput);
 
+  //enable jquery ui datepicker
+  dateInput.datepicker({
+    minDate: 1,
+    onClose: function(){
+      //when calender is closed force a change event on dateInput so replacement function bellow happens
+      $(this).trigger("change");
+    }
+  });
+
   //automatically focus on new element
   dateInput.trigger("focus");
 });
 
 //blur event that will trigger when user clicks off date input area
-$(".list-group").on("blur", "input[type='text']", function(){
+//blur event switched to change event because of datepicker issue with user clicking off area
+$(".list-group").on("change", "input[type='text']", function(){
   //get current text
   var date = $(this)
     .val()
@@ -195,6 +235,9 @@ $(".list-group").on("blur", "input[type='text']", function(){
 
   //replace input with span element
   $(this).replaceWith(taskSpan);
+
+   //pass tasks <li> element into auditTask() to check new due date
+   auditTask($(taskSpan).closest(".list-group-item"));
 });
 
 // modal was triggered
