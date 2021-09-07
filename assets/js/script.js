@@ -45,6 +45,56 @@ var saveTasks = function() {
 };
 
 
+//allow drag to drop deletion
+$("#trash").droppable({
+  accept: ".card .list-group-item",
+  tolerance: "touch",
+  drop: function(event, ui){
+    ui.draggable.remove();
+  }
+  //no need to call saveTasks() because removing a task from an list triggers a .sortable() update()
+});
+
+
+//make tasks sortable and able to save after sorting
+$(".card .list-group").sortable({
+  connectWith: $(".card .list-group"),
+  scroll: false,
+  tolerance: "pointer",
+  helper: "clone",
+  update: function(event){
+    //array to store the task data in
+    var tempArr = [];
+    //loop over current set of children in sortable list
+    $(this).children().each(function(){
+      //inside the callback function $(this) referes to the child element at that index
+      var text = $(this)
+        .find("p")
+        .text()
+        .trim();
+
+      var date = $(this)
+        .find("span")
+        .text()
+        .trim();
+
+      //add task data to the temp array as an object
+      tempArr.push({
+        text: text,
+        date: date
+      });
+    });
+    //trim down list's ID to match object property
+    var arrName = $(this)
+      .attr("id")
+      .replace("list-", "");
+
+    //update array on tasks object and save
+    tasks[arrName] = tempArr;
+    saveTasks();
+  }
+});
+
 //when p element is clicked make it an editable textarea
 $(".list-group").on("click", "p", function(){
   var text = $(this)
