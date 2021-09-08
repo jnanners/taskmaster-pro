@@ -1,3 +1,73 @@
+body {
+  font-family: "Open Sans", sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Staatliches", sans-serif;
+}
+
+.dropover {
+  background-color: rgba(0,0,0,0.3);
+}
+
+.dropover-active {
+  background-color: rgba(0,0,0,0.9);
+}
+
 ul.list-group {
   min-height: 130px;
 }
+
+.bottom-trash {
+  opacity: 0;
+  color: #f1f1f1;
+  font-size: 2.3rem;
+  font-family: "Staatliches", sans-serif;
+  transform: translateY(150px);
+  transition: all .5s ease-in-out;
+  background-color: rgba(234,0,39,0.7);
+}
+
+.bottom-trash-drag {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.bottom-trash-active {
+  background-color: rgba(234,0,39,1);
+}
+
+.btn-add, .btn-save {
+  background-color: #FA8BFF;
+  background-image: linear-gradient(45deg, #FA8BFF 0%, #2BD2FF 52%, #2BFF88 90%);
+  transition: all .5s ease-out;
+  background-size: 1px 100px;
+  background-position: 0 -10px;
+}
+
+.btn-close, .btn-delete {
+  background-color: #EA0028;
+  background-image: linear-gradient(180deg, #FF9A8B 0%, #EA0028 100%);
+  transition: all .5s ease-out;
+  background-size: 1px 100px;
+  background-position: 0 -10px;
+}
+
+.btn-close:hover, .btn-delete:hover, .btn-add:hover, .btn-save:hover {
+  background-position: 1px -50px;
+}
+
+/* We set the background to have a gradient, and if the browser doesn't support it, 
+the color will fall back to whatever background-color is using. 
+We also used the background-size property to make that gradient a lot taller (100px) 
+than the actual button height (38px), so that's why we don't see the purple-ish color 
+(#FA8BFF) from the gradient on load. We then set the background-position to move 
+from -10px to -50px on hover, effectively moving the colored background up and down */
+
+/* We've also used a transition property, which provides a nice sliding effect. 
+If we didn't use the transition, the change would be immediate and jarring. */
