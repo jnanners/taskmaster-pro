@@ -79,8 +79,15 @@ $("#modalDueDate").datepicker({
 $("#trash").droppable({
   accept: ".card .list-group-item",
   tolerance: "touch",
+  over: function(){
+    $(".bottom-trash").addClass("bottom-trash-active");
+  },
+  out: function(){
+    $(".bottom-trash").removeClass("bottom-trash-active");
+  },
   drop: function(event, ui){
     ui.draggable.remove();
+    $(".bottom-trash").removeClass("bottom-trash-active");
   }
   //no need to call saveTasks() because removing a task from an list triggers a .sortable() update()
 });
@@ -92,9 +99,24 @@ $(".card .list-group").sortable({
   scroll: false,
   tolerance: "pointer",
   helper: "clone",
+  activate: function(event, ui){
+    $(this).addClass("dropover");
+    $(".bottom-trash").addClass("bottom-trash-drag");
+  },
+  deactivate: function(event, ui){
+    $(this).removeClass("dropover");
+    $(".bottom-trash").removeClass("bottom-trash-drag");
+  },
+  over: function(event){
+    $(event.target).addClass("dropover-active");
+  },
+  out: function(event){
+    $(event.target).removeClass("dropover-active");
+  },
   update: function(event){
     //array to store the task data in
     var tempArr = [];
+
     //loop over current set of children in sortable list
     $(this).children().each(function(){
       //inside the callback function $(this) referes to the child element at that index
@@ -253,7 +275,7 @@ $("#task-form-modal").on("shown.bs.modal", function() {
 });
 
 // save button in modal was clicked
-$("#task-form-modal .btn-primary").click(function() {
+$("#task-form-modal .btn-save").click(function() {
   // get form values
   var taskText = $("#modalTaskDescription").val();
   var taskDate = $("#modalDueDate").val();
@@ -286,4 +308,8 @@ $("#remove-tasks").on("click", function() {
 // load tasks for the first time
 loadTasks();
 
-
+setInterval(function(){
+  $(".card .list-group-item").each(function(index, el){
+    auditTask(el);
+  });
+}, (1000 * 60) * 30);
